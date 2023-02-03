@@ -1,17 +1,36 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	setting "github.com/Babatunde50/lms/pkg/settings"
+	"github.com/Babatunde50/lms/router"
 )
 
+func init() {
+	setting.Setup()
+}
+
 func main() {
-	router := gin.Default()
 
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
-	})
+	routersInit := router.InitRouter()
+	readTimeout := setting.ServerSetting.ReadTimeout
+	writeTimeout := setting.ServerSetting.WriteTimeout
+	endPoint := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
+	maxHeaderBytes := 1 << 20
 
-	router.Run()
+	server := &http.Server{
+		Addr:           endPoint,
+		Handler:        routersInit,
+		ReadTimeout:    readTimeout,
+		WriteTimeout:   writeTimeout,
+		MaxHeaderBytes: maxHeaderBytes,
+	}
+
+	log.Printf("[info] start http server listening %s", endPoint)
+
+	server.ListenAndServe()
+
 }
