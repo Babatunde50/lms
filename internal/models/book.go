@@ -8,8 +8,7 @@ import (
 )
 
 type Book struct {
-	ID              int       `json:"id"`
-	ISBN            int       `json:"isbn"`
+	ISBN            string    `json:"isbn"`
 	Title           string    `json:"title"`
 	Author          string    `json:"author"`
 	PublicationDate time.Time `json:"publication_date"`
@@ -33,7 +32,7 @@ func AddBook(data map[string]interface{}) error {
 	defer cancel()
 
 	b := Book{
-		ISBN:            data["isbn"].(int),
+		ISBN:            data["isbn"].(string),
 		Title:           data["title"].(string),
 		Author:          data["author"].(string),
 		PublicationDate: data["publication_date"].(time.Time),
@@ -104,20 +103,20 @@ func DeleteBook(bookId int) error {
 }
 
 // GET book
-func GetBook(bookId int) (Book, error) {
+func GetBook(isbn string) (Book, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
 	defer cancel()
 
 	var book Book
 
-	stmt := `SELECT id, isbn, format, author, available_copies, cover_image, description, genre, language, total_copies, title, publisher, publication_date, created_at, updated_at FROM books 
-			WHERE id = $1
+	stmt := `SELECT isbn, format, author, available_copies, cover_image, description, genre, language, total_copies, title, publisher, publication_date, created_at, updated_at FROM books 
+			WHERE isbn = $1
 		`
 
-	row := db.QueryRowContext(ctx, stmt, bookId)
+	row := db.QueryRowContext(ctx, stmt, isbn)
 
-	err := row.Scan(&book.ID, &book.ISBN, &book.Format, &book.Author, &book.AvailableCopies, &book.CoverImage, &book.Description, &book.Genre, &book.Language, &book.TotalCopies, &book.Title, &book.Publisher, &book.PublicationDate, &book.CreatedAt, &book.UpdatedAt)
+	err := row.Scan(&book.ISBN, &book.Format, &book.Author, &book.AvailableCopies, &book.CoverImage, &book.Description, &book.Genre, &book.Language, &book.TotalCopies, &book.Title, &book.Publisher, &book.PublicationDate, &book.CreatedAt, &book.UpdatedAt)
 
 	if err != nil {
 		log.Println(err)
@@ -128,8 +127,31 @@ func GetBook(bookId int) (Book, error) {
 }
 
 // get books
-func GetBooks() ([]Book, error) {
-	var books []Book
+func GetBooks(limit, offset int) ([]Book, error) {
+	books := []Book{}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+	defer cancel()
+
+	stmt := `SELECT isbn, format, author, available_copies, cover_image, description, genre, language, total_copies, title, publisher, publication_date, created_at, updated_at FROM books 
+			LIMIT $1 OFFSET $2
+	`
+
+	rows, err := db.QueryContext(ctx, stmt, limit, offset)
+	if err != nil {
+		return books, err
+	}
+
+	if rows.Next() {
+		var book Book
+		err := rows.Scan(&book.ISBN, &book.Format, &book.Author, &book.AvailableCopies, &book.CoverImage, &book.Description, &book.Genre, &book.Language, &book.TotalCopies, &book.Title, &book.Publisher, &book.PublicationDate, &book.CreatedAt, &book.UpdatedAt)
+		if err != nil {
+			return books, err
+		}
+
+		books = append(books, book)
+	}
 
 	return books, nil
 }
