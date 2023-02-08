@@ -25,47 +25,24 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.books (
-    id integer NOT NULL,
-    isbn integer NOT NULL,
-    title character varying(255) NOT NULL,
-    author character varying(255) NOT NULL,
+    isbn character varying(15) NOT NULL,
+    title character varying(50) NOT NULL,
+    author character varying(50) NOT NULL,
     publication_date timestamp without time zone NOT NULL,
-    publisher character varying(255) NOT NULL,
-    genre character varying(255) NOT NULL,
-    language character varying(255) NOT NULL,
-    description character varying(255) NOT NULL,
-    cover_image character varying(255) NOT NULL,
+    publisher character varying(50) NOT NULL,
+    genre character varying(50) NOT NULL,
+    language character varying(50) NOT NULL,
+    description character varying(250) NOT NULL,
+    cover_image character varying(200),
     available_copies integer NOT NULL,
     total_copies integer NOT NULL,
-    format character varying(255) NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    format character varying(25) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
 ALTER TABLE public.books OWNER TO postgres;
-
---
--- Name: books_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.books_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.books_id_seq OWNER TO postgres;
-
---
--- Name: books_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.books_id_seq OWNED BY public.books.id;
-
 
 --
 -- Name: members; Type: TABLE; Schema: public; Owner: postgres
@@ -120,13 +97,6 @@ CREATE TABLE public.schema_migration (
 ALTER TABLE public.schema_migration OWNER TO postgres;
 
 --
--- Name: books id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.books ALTER COLUMN id SET DEFAULT nextval('public.books_id_seq'::regclass);
-
-
---
 -- Name: members id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -138,7 +108,7 @@ ALTER TABLE ONLY public.members ALTER COLUMN id SET DEFAULT nextval('public.memb
 --
 
 ALTER TABLE ONLY public.books
-    ADD CONSTRAINT books_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT books_pkey PRIMARY KEY (isbn);
 
 
 --
