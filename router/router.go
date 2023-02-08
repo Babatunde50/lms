@@ -11,7 +11,10 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.GET("/api/books/:id", api.GetBook)
+	r.GET("/api/books", api.GetBooks)
+	r.GET("/api/books/:isbn", api.GetBook)
+	r.POST("/api/books", api.AddBook)
+
 	r.POST("/api/auth/signup", api.SignUp)
 	r.POST("/api/auth/login", api.Login)
 
