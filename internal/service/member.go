@@ -43,3 +43,13 @@ func (m *Member) Add() error {
 
 	return nil
 }
+
+func (m *Member) FindByEmail() (models.Member, error) {
+	member, err := models.GetMemberByEmail(m.Email)
+
+	if err != nil {
+		return member, err
+	}
+
+	return member, nil
+}

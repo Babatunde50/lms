@@ -43,3 +43,26 @@ func AddMember(data map[string]interface{}) error {
 
 	return nil
 }
+
+// GET book
+func GetMemberByEmail(email string) (Member, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+	defer cancel()
+
+	var member Member
+
+	stmt := `SELECT address, created_at, email, id, membership_date, name, password, phone_number, updated_at FROM members 
+			WHERE email = $1
+		`
+
+	row := db.QueryRowContext(ctx, stmt, email)
+
+	err := row.Scan(&member.Address, &member.CreatedAt, &member.Email, &member.ID, &member.MembershipDate, &member.Name, &member.Password, &member.PhoneNumber, &member.UpdatedAt)
+
+	if err != nil {
+		return member, err
+	}
+
+	return member, nil
+}

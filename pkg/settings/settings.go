@@ -60,6 +60,14 @@ type Redis struct {
 
 var RedisSetting = &Redis{}
 
+type Token struct {
+	MinSecretKeySize    int
+	SecretKey           string
+	TokenExpireDuration time.Duration
+}
+
+var TokenSetting = &Token{}
+
 var cfg *ini.File
 
 // Setup initialize the configuration instance
@@ -74,11 +82,13 @@ func Setup() {
 	mapTo("server", ServerSetting)
 	mapTo("database", DatabaseSetting)
 	mapTo("redis", RedisSetting)
+	mapTo("token", TokenSetting)
 
 	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 	RedisSetting.IdleTimeout = RedisSetting.IdleTimeout * time.Second
+
 }
 
 // mapTo map section
