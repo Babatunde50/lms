@@ -7,12 +7,14 @@ import (
 
 	"github.com/Babatunde50/lms/internal/models"
 	setting "github.com/Babatunde50/lms/pkg/settings"
+	"github.com/Babatunde50/lms/pkg/token"
 	"github.com/Babatunde50/lms/router"
 )
 
 func init() {
 	setting.Setup()
 	models.Setup()
+	token.SetupJWTMaker()
 }
 
 func main() {
